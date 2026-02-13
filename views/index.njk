@@ -3,6 +3,18 @@
 {% block content %}
 <main>
     <h1>{{ title }}</h1>
-    <p>{{ message }}</p>
+    {% for post in posts %}
+    <article>
+        <header>
+            <h2>{{ post.name }}</h2>
+        </header>
+        <p>{{ post.content }}</p>
+        <footer>
+            <p>Posted on {{ post.created_at }}</p>
+        </footer>
+    </article>
+    {% else %}
+    <h2>Inga inlägg att visa.</h2>
+    {% endfor %}
 </main>
 {% endblock %}
