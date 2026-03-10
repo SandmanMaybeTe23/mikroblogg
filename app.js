@@ -2,9 +2,11 @@ import "dotenv/config"
 import express from "express"
 import nunjucks from "nunjucks"
 import morgan from 'morgan'
+import session from "express-session"
 
 import indexRouter from "./routes/index.js"
 import postRouter from "./routes/post.js"
+import usersRouter from "./routes/users.js"
 
 const app = express()
 const port = 3000 || process.env.PORT
@@ -24,8 +26,23 @@ app.use(express.json())
 
 app.use(express.static("public"))
 
+app.use(session({
+    secret: "osäkert", // Byt ut till en säker nyckel
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        sameSite: true, // Förhindrar CSRF-attacker
+        secure: false, // Sätt till true om du använder HTTPS
+        maxAge: 1000 * 60 * 60 * 24 // 24 timmar
+    }
+}))
+
 app.use("/", indexRouter)
-app.use("/:id",postRouter)
+app.use("/posts",postRouter)
+app.use("/users", usersRouter)
+
+
+
 
 app.use((req, res, next) => {
     res.status(404).send("Sidan kunde inte hittas.")

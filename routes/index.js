@@ -9,7 +9,7 @@ router.get("/", async (req, res, next) => {
             SELECT post.id, post.content, post.created_at, user.name
             FROM post
             JOIN user ON post.user_id = user.id
-            ORDER BY post.created_at DESC
+            ORDER BY post.user_id ASC
         `)
         res.render("index.njk", { title: "Mikroblogg", posts: rows })
     } catch (err) {
