@@ -12,6 +12,14 @@ router.get("/test-hash/:password", async (req, res) => {
 })
 
 
+
+router.get("/login", async(req,res) =>{
+
+    res.render(("login.njk"))
+
+
+})
+
 router.post("/login", async (req, res) => {
     // Validering och sanering av data kommer här
     const { username, password } = req.body
