@@ -1,5 +1,6 @@
 import express from "express"
 import bcrypt from "bcrypt"
+import pool from "../config/database.js"
 import { body, validationResult } from "express-validator"
 const router = express.Router()
 
@@ -20,37 +21,70 @@ router.get("/login", async(req,res) =>{
 
 })
 
-router.post("/login", async (req, res) => {
-    // Validering och sanering av data kommer här
-    const { username, password } = req.body
-
-    // test
-    res.json({username, password})
-})
-
-
-
 
 
 router.post("/login",
-    body("username")
-        .trim()
-        .notEmpty()
-        .withMessage("Användarnamn krävs"),
-    body("password")
-        .notEmpty()
-        .withMessage("Lösenord krävs"),
+    // ... validering ...
     async (req, res) => {
-        // Kontrollera valideringsfel
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) {
-            // Här kan det vara snyggt med ett flash-meddelande eller liknande för att visa felen för användaren
-            return res.status(400).json({ errors: errors.array() })
-        }
+        // ... kontrollera valideringsfel ...
         const { username, password } = req.body
-        // Fortsätt med inloggning...
-        res.json({username, password})
+
+        try {
+            // ... hämta användare från databasen ...
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (!isMatch) {
+                return res.status(401).json({ error: "Felaktigt användarnamn eller lösenord" })
+            }
+
+
+            const [rows] = await pool.query("SELECT * FROM user WHERE name = ?", [username])
+            const user = rows[0]
+
+            if (!user) {
+                return res.status(401).json({ error: "Felaktigt användarnamn eller lösenord" })
+            }
+
+            // Användarens lösenord matchar och vi kan logga in användaren
+            return res.json({ message: "Användaren inloggad", user })
+        } catch (err) {
+            console.error(err)
+            res.status(500).json({ error: "Något gick fel" })
+        }
     }
 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        try {
+            // ... hämta användare från databasen ...
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (!isMatch) {
+                return res.status(401).json({ error: "Felaktigt användarnamn eller lösenord" })
+            }
+
+
+        try {
+            const [rows] = await pool.query("SELECT * FROM user WHERE name = ?", [username])
+            const user = rows[0]
+
+            if (!user) {
+                return res.status(401).json({ error: "Felaktigt användarnamn eller lösenord" })
+            }
+
+
+
 
 export default router
